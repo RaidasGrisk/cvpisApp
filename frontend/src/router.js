@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 
 // router components
 import Home from './pages/Home'
-import Docs from './pages/Docs'
+import Search from './pages/Search'
 
 Vue.use(VueRouter)
 
@@ -13,13 +13,13 @@ export default new VueRouter({
       path: '/',
       name: 'Home',
       component: Home,
-      icon: 'mdi-view-dashboard',
+      icon: 'mdi-home-minus-outline',
     },
     {
-      path: '/Docs',
-      name: 'Docs',
-      component: Docs,
-      icon: 'mdi-image'
+      path: '/Search tenders',
+      name: 'Search',
+      component: Search,
+      icon: 'mdi-file-search-outline'
     }
   ],
   linkActiveClass: 'is-active'
