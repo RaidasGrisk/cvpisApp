@@ -1,9 +1,8 @@
 <template>
   <div>
     <v-app-bar
-    app
+      app
       dense
-      flat
     >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>CvpisApp</v-toolbar-title>

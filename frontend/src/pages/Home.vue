@@ -45,6 +45,21 @@
       <!-- </v-stepper-header> -->
     </v-stepper>
 
+    <br>
+    <v-card
+      elevation="1"
+      outlined
+    >
+      <v-card-text>
+        <p class="display-1 text--primary">
+          Explore the DB via API
+        </p>
+        <div class="text--primary">
+          CouchDB, can explore / use as mongoDB
+        </div>
+      </v-card-text>
+    </v-card>
+
   </div>
 </template>
 
