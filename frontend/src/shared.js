@@ -16,25 +16,25 @@ export default {
   // },
 
   // having array of string dates return oldest and newest dates
-  // getOldestDate: function(dates) {
-  //   var min_dt = dates[0]
-  //   var max_dt = dates[0]
-  //   var prev_min_dt = new Date(dates[0])
-  //   var prev_max_dt = new Date(dates[0])
-  //   dates.forEach(function(dt, _){
-  //     // min date
-  //     if (new Date(dt) > prev_min_dt){
-  //       min_dt = dt
-  //       prev_min_dt = new Date(dt)
-  //     }
-  //     // max date
-  //     if (new Date(dt) < prev_max_dt){
-  //       max_dt = dt
-  //       prev_max_dt = new Date(dt)
-  //     }
-  //   })
-  //   return [min_dt, max_dt]
-  // },
+  getOldestDate: function(dates) {
+    var min_dt = dates[0]
+    var max_dt = dates[0]
+    var prev_min_dt = new Date(dates[0])
+    var prev_max_dt = new Date(dates[0])
+    dates.forEach(function(dt){
+      // min date
+      if (new Date(dt) > prev_min_dt){
+        min_dt = dt
+        prev_min_dt = new Date(dt)
+      }
+      // max date
+      if (new Date(dt) < prev_max_dt){
+        max_dt = dt
+        prev_max_dt = new Date(dt)
+      }
+    })
+    return [min_dt, max_dt]
+  },
 
   // given input string make regex string
   getRegexFromSearchString: function(inputStringTender) {

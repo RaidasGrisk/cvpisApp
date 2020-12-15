@@ -7,9 +7,9 @@
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>CvpisApp</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>mdi-dots-vertical</v-icon>
-      </v-btn>
+
+      <signIn/>
+
     </v-app-bar>
 
     <v-navigation-drawer
@@ -37,7 +37,8 @@
         <v-list-item
           v-for="route in $router.options.routes"
           :key="route.name"
-          link @click="$router.push({ path: route.path })"
+          link @click="$router.push({ path: route.path }).catch(err => {})"
+
         >
           <v-list-item-icon>
             <v-icon>{{ route.icon }}</v-icon>
@@ -55,10 +56,13 @@
 </template>
 
 <script>
+
+import signIn from '@/components/signIn'
+
 export default {
   name: 'navbar',
-  props: {
-    msg: String
+  components: {
+    signIn
   },
 
   data () {
@@ -66,7 +70,6 @@ export default {
       drawer: true,
     }
   },
-
 
 }
 </script>

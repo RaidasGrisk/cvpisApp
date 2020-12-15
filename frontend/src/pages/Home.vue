@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card
-      elevation="1"
+      elevation="0"
       outlined
     >
       <v-card-text>
@@ -16,7 +16,7 @@
 
     <br>
     <v-card
-      elevation="1"
+      elevation="0"
       outlined
     >
       <v-card-text>
@@ -32,7 +32,7 @@
     <v-stepper class="mt-12" vertical>
       <!-- <v-stepper-header > -->
         <v-stepper-step step="1" complete>
-          Pick search terms
+          Filter tenders of your choise
         </v-stepper-step>
 
         <v-stepper-step step="2" complete>
@@ -40,14 +40,14 @@
         </v-stepper-step>
 
         <v-stepper-step step="3" complete>
-          Receive tenders of your choice
+          Receive updates each day
         </v-stepper-step>
       <!-- </v-stepper-header> -->
     </v-stepper>
 
     <br>
     <v-card
-      elevation="1"
+      elevation="0"
       outlined
     >
       <v-card-text>
@@ -60,6 +60,12 @@
       </v-card-text>
     </v-card>
 
+
+    <p>isSignIn: {{ isSignIn }}</p>
+
+
+
+
   </div>
 </template>
 
@@ -68,7 +74,23 @@ export default {
   name: 'HelloWorld',
   props: {
     msg: String
-  }
+  },
+
+  data() {
+    return {
+      isSignIn: this.$gAuth.isAuthorized || false
+    }
+  },
+
+  created() {
+    let that = this;
+    setInterval(function () {
+      that.isSignIn = that.$gAuth.isAuthorized;
+    }, 1000);
+
+  },
+
+
 }
 </script>
 

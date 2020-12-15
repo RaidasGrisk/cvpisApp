@@ -1,38 +1,71 @@
 <template>
   <div>
+    <dialog/>
+    <v-row no-gutters>
+      <v-col cols="12" sm="8" md="10">
 
-    <v-card elevation="0" outlined>
-      <v-card-text>
-        <v-text-field
-          v-model="searchString"
-          label="Search string"
-        ></v-text-field>
-        <v-select
-          v-model="tender_type"
-          :items="tender_types"
-          label=""
-          multiple
-          chips
-          hint=""
-          persistent-hint
-        ></v-select>
-        <v-select
-          v-model="tender_class"
-          :items="tender_classes"
-          label=""
-          multiple
-          chips
-          hint=""
-          persistent-hint
-        ></v-select>
-      </v-card-text>
-    </v-card>
+        <v-card elevation="0" outlined>
+          <v-card-text>
+            <p class="display-1 text--primary">
+              Search params
+            </p>
+            <v-text-field
+              v-model="searchParams.searchString"
+              label="Search string"
+            >
+              <v-btn slot="append" outlined fab small color="primary">
+                <v-icon dark>
+                  mdi-help
+                </v-icon>
+              </v-btn>
+            </v-text-field>
+
+            <v-select
+              v-model="searchParams.tender_type"
+              :items="searchParams.tender_types"
+              label=""
+              multiple
+              chips
+              hint=""
+              persistent-hint
+            ></v-select>
+            <v-select
+              v-model="searchParams.tender_class"
+              :items="searchParams.tender_classes"
+              label=""
+              multiple
+              chips
+              hint=""
+              persistent-hint
+            ></v-select>
+          </v-card-text>
+        </v-card>
+
+      </v-col>
+      <v-col md="2">
+        <v-card elevation="0" height='100%' style="position: relative" outlined>
+          <v-card-text>
+            <p class="display-1 text--primary">
+              Stats
+            </p>
+            <p>
+            {{lastDate}} - {{firstDate}}
+            </p>
+            <p>
+              Tenders in total # {{ filteredTenders.length }} <br>
+              Tenders a day # ~{{ (filteredTenders.length / lastDateInt).toFixed(2) }}
+            </p>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
 
     <br><br>
 
     <v-data-table
       :headers="headers"
-      :items="passData()"
+      :items="filteredTenders"
       class="elevation-1"
       :footer-props="{'items-per-page-options':[15, 30, 50, 100]}"
       dense
@@ -55,34 +88,75 @@ import shared from '../shared'
 import Constants from '../dbConstants'
 const dbConstants = Constants.GetDBConstants()
 
+import dialog from '@/components/dialog'
+
 import PouchDB from 'pouchdb';
 PouchDB.plugin(require('pouchdb-find').default)
 
 export default {
+
+  Components: {
+    dialog
+  },
+
   data () {
     return {
 
-      tender_type: dbConstants.tenderTypes,
-      tender_types: dbConstants.tenderTypes,
-      tender_class: dbConstants.tenderClasses,
-      tender_classes: dbConstants.tenderClasses,
-      data: [],
+      searchParams: {
+        searchString: '',
+        tender_type: dbConstants.tenderTypes,
+        tender_types: dbConstants.tenderTypes,
+        tender_class: dbConstants.tenderClasses,
+        tender_classes: dbConstants.tenderClasses,
+      },
+
+      data: [], // the data returned by db
       isDataLoaded: true,
-      searchString: ''
+
+      lastDateInt: null,
+      lastDate: null,
+      firstDate: null
     }
   },
+
   computed: {
 
-    headers () {
+    headers() {
       return [
         { text: 'Tender', value: 'name'},
         { text: 'Buyer', value: 'buyer'},
-        { text: 'Init_date', value: 'init_date'},
-        { text: 'Deadline', value: 'deadline'}
+        { text: 'Init_date', value: 'init_date', width: 110},
+        { text: 'Deadline', value: 'deadline', width: 110}
       ]
     },
 
+    // filter data according to current selections
+    // putting this inside watch, massivelly slows down the site
+    filteredTenders() {
+
+      var regexString = shared.getRegexFromSearchString(this.searchParams.searchString.toLowerCase())
+      // test if expression is valid and remove invalid chars if so
+      // invalid expression example: "(aa, bb"
+      try {
+        ''.match(regexString)
+      } catch(e) {
+        console.log('invalid removing chars')
+        //eslint-disable-next-line
+        regexString = regexString.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
+      }
+      regexString = new RegExp(regexString)
+
+      var dataMask = this.data.map(tender =>
+          (regexString.test(tender.name.toLowerCase()) &&
+          this.searchParams.tender_types.includes(tender.tender_type) &&
+          this.searchParams.tender_class.includes(tender.tender_class))
+      )
+
+      return this.data.filter((item, i) => dataMask[i]);
+    },
+
   },
+
   methods: {
 
     // a function to query the db and
@@ -103,57 +177,18 @@ export default {
         limit: 999999
       }).then(function (result) {
         vm.data = result['docs']
+
+        // save last data to get proper counts
+        var minMaxDates = shared.getOldestDate(vm.data.map(value => value.init_date))
+        const diffTime = Math.abs(new Date(minMaxDates[1]) - new Date(minMaxDates[0]));
+        vm.lastDateInt = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        vm.lastDate = minMaxDates[1]
+        vm.firstDate = minMaxDates[0]
+
         vm.isDataLoaded = false
       }).catch(function (err) {
         console.log(err)
       })
-    },
-
-    // filter data according to current selections
-
-    filteredTenders() {
-
-      // what are the issues?
-      // first we make a regex string then create a regex object out of that
-      // not sure if this is a problem, but does not seem to be effective
-      // second regex errors with unfinished input strings
-
-      // regex string
-      var regexString = shared.getRegexFromSearchString(this.searchString.toLowerCase())
-
-      // test if expression is valid and remove invalid chars if so
-      // invalid expression example: "(aa, bb"
-      try {
-        ''.match(regexString)
-      } catch(e) {
-        console.log('invalid removing chars')
-        //eslint-disable-next-line
-        regexString = regexString.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&")
-      }
-
-      regexString = new RegExp(regexString)
-      // console.log('final regex search', regexString)
-
-      // this is the final function that returns out dataset
-      var vm = this
-      return this.data.filter(function(tender) {
-        if (
-          regexString.test(tender.name.toLowerCase()) &&
-          vm.tender_types.includes(tender.tender_type) &&
-          vm.tender_class.includes(tender.tender_class)) {
-          return true
-        } else {
-          return false
-        }
-      })
-    },
-
-    passData() {
-      if (this.data.length > 3) {
-        return this.filteredTenders()
-      } else {
-        return this.data
-      }
     }
 
   },
@@ -162,7 +197,7 @@ export default {
 
     // get latest data on load
     var d = new Date();
-    d.setMonth(d.getMonth() - 2);
+    d.setMonth(d.getMonth() - 12);
     console.log(d)
 
     this.getData(
