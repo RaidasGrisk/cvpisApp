@@ -4,21 +4,16 @@ from itsdangerous import URLSafeSerializer, exc
 from flask import request
 from flask import jsonify
 
-# TODO: because this is no loger only tied to email
-#  require more params, specifically, dbId
-def unsub(email):
+
+def delete_sub_doc(doc_id):
     url = f'http://{couchdb_creds["acc"]}:{couchdb_creds["pass"]}@{couchdb_creds["host"]}'
     couchserver = couchdb.Server(url)
-    filter = {
-        'selector': {'data': {'email': email}},
-    }
-    docs = couchserver['subscribers'].find(filter)
-    doc = [i for i in docs][0]  # for now assume only one doc
-    if doc: # cant use walrus op :((
-        couchserver['subscribers'].delete(doc)
+    try:  # in case this is not a valid doc id
+        doc = couchserver['subscriptions'][doc_id]
+        couchserver['subscriptions'].delete(doc)
         return True
-    else:
-        return False  # 'No such email'
+    except:
+        return False
 
 
 def remove_subscriber():
@@ -29,12 +24,13 @@ def remove_subscriber():
 
     s = URLSafeSerializer(unsub_config['secret_key'], salt=unsub_config['salt'])
     try:
-        email = s.loads(token)
+        doc_id = s.loads(token)
     except exc.BadSignature:
         return jsonify({'message': 'bad token'}), 500
 
+    print(doc_id)
     # do the actual unsub
-    if unsub(email):
+    if delete_sub_doc(doc_id):
         return jsonify({'message': 'success'}), 200
     else:
-        return jsonify({'message': 'fail, no such email'}), 500
+        return jsonify({'message': 'fail, no such email (!?)'}), 500
