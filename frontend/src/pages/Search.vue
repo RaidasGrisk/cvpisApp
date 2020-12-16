@@ -13,10 +13,8 @@
               v-model="searchParams.searchString"
               label="Search string"
             >
-              <v-btn slot="append" outlined fab small color="primary">
-                <v-icon dark>
-                  mdi-help
-                </v-icon>
+              <v-btn slot="append" small>
+                How to?
               </v-btn>
             </v-text-field>
 
