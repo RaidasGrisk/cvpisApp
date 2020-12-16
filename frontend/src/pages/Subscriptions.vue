@@ -5,18 +5,17 @@
         <p class="display-1 text--primary">
           Login Status:
            <label v-if="this.isSignIn">{{ this.$gAuth.GoogleAuth.currentUser.get().getId() }}</label>
-           <label v-else>Not signed in</label>
+           <label v-else>Not signed in</label><br>
         </p>
         <div class="text--primary">
         </div>
       </v-card-text>
     </v-card>
 
-    <br>
-    {{ userData }}
+    <v-overlay :value="isSignIn && loading"><v-progress-circular indeterminate color="primary"></v-progress-circular></v-overlay>
     <br>
 
-    <label v-if="this.userData">
+    <label v-if="this.userData && this.isSignIn">
     <v-data-table
         :headers="headers"
         :items="userData"
@@ -157,6 +156,29 @@
       </v-data-table>
     </label>
 
+
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="2000"
+      bottom
+      right
+      color="primary"
+      outlined
+    >
+      {{snackbartext}}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+          color="primary"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+
   </div>
 </template>
 
@@ -171,7 +193,12 @@ export default {
     return {
       isSignIn: this.$gAuth.isAuthorized || false,
       userData: [],
-      userDatachangeCounter: 0,
+      userId: null,
+      loading: true,
+
+      syncWithDbFlag: false,
+      snackbar: false,
+      snackbartext: 'updating',
 
       dialog: false,
       dialogDelete: false,
@@ -215,14 +242,14 @@ export default {
     },
     userData: {
       handler(val){
-        // ingore the first change as it is the result
-        // of loading the data from the db to the app
-        this.userDatachangeCounter += 1
-        if (this.userDatachangeCounter > 1) {
-          console.log('changed', this.userData, val)
+        // to break from inf loop with user and db response changes
+        // adding a syncWithDbFlag var
+        if (this.syncWithDbFlag) {
+          console.log('updating db', val)
           this.syncUserData()
         } else {
-          console.log('first change: loaded the data')
+          console.log('not updating the db')
+          this.syncWithDbFlag = true
         }
 
       },
@@ -234,6 +261,7 @@ export default {
     // fetch user data
     getUserData() {
       var vm = this
+      vm.loading = true
       axios.get('http://0.0.0.0:23450/get_user_data', {
         params: {
           userId: this.$gAuth.GoogleAuth.currentUser.get().getId()
@@ -241,22 +269,39 @@ export default {
       }).then(function (response) {
           console.log(response.data)
           vm.userData = response.data['data']
+          vm.loading = false
       });
     },
 
     syncUserData () {
       var vm = this
+      vm.snackbar = true
       // if this is a new user, the data will lack: id, rev, userId
-      // think of a way to implement this simply
-      // if there is no id, then add one.
-      // id and rev should be dealt with in the backend
-      // also
-      // this should return the full user data
-      // and it should be imediatly stored on the client-end 
+      // lets add userId first, this must be done to link each row to a user
+      // lets not add id and rev, as this will signfigy the fact that the
+      // records that lack it, are new prev unseen db docs
+
+      // add userID
+      // loop over each doc in user
+      for (var i = 0; i < vm.userData.length; ++i) {
+        // if there is no userid
+        if (!('userid' in vm.userData[i])) {
+          console.log('adding user id')
+          vm.userData[i]['userid'] = vm.userId
+        }
+      }
+
+      // post data + userid - id, rev (if new entry)
+      // manage the rest in the backend
       axios.post('http://0.0.0.0:23450/sync_user_data', {
-        userData: vm.userData
+        userData: vm.userData,
+        userid: vm.userId
       }).then(function (response) {
-          console.log(response.data)
+          console.log('backend resp', response.data)
+          // refresh the data with new fresh copy of data from the db
+          vm.userData = response.data
+          vm.syncWithDbFlag = false
+          vm.snackbartext = 'updated!'
       });
     },
 
@@ -306,14 +351,15 @@ export default {
 
 
   created() {
-    let that = this;
+    let vm = this;
     let checkGauthLoad = setInterval(function () {
-      that.isInit = that.$gAuth.isInit
-      that.isSignIn = that.$gAuth.isAuthorized
-      if (that.isSignIn) {
+      vm.isInit = vm.$gAuth.isInit
+      vm.isSignIn = vm.$gAuth.isAuthorized
+      if (vm.isSignIn) {
         console.log('stopped')
         clearInterval(checkGauthLoad)
-        that.getUserData()
+        vm.userId = vm.$gAuth.GoogleAuth.currentUser.get().getId()
+        vm.getUserData()
       }
     }, 1000);
 
