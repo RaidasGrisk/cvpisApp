@@ -1,7 +1,9 @@
 <template>
   <div>
-    <dialog/>
-    <v-row no-gutters>
+
+    <howToSearch :visible="showHowToSearch" @close="showHowToSearch=false" />
+
+    <v-row>
       <v-col cols="12" sm="8" md="10">
 
         <v-card elevation="0" outlined>
@@ -13,9 +15,8 @@
               v-model="searchParams.searchString"
               label="Search string"
             >
-              <v-btn slot="append" small>
-                How to?
-              </v-btn>
+            <v-btn slot="append" small @click.stop="showHowToSearch=true">How to?</v-btn>
+
             </v-text-field>
 
             <v-select
@@ -58,7 +59,6 @@
       </v-col>
     </v-row>
 
-
     <br><br>
 
     <v-data-table
@@ -77,6 +77,7 @@
         </a>
       </template>
     </v-data-table>
+
   </div>
 </template>
 
@@ -86,15 +87,17 @@ import shared from '../shared'
 import Constants from '../dbConstants'
 const dbConstants = Constants.GetDBConstants()
 
-import dialog from '@/components/dialog'
+import howToSearch from '@/components/howToSearch'
 
 import PouchDB from 'pouchdb';
 PouchDB.plugin(require('pouchdb-find').default)
 
 export default {
 
-  Components: {
-    dialog
+  name: 'Search',
+
+  components: {
+    howToSearch,
   },
 
   data () {
@@ -113,7 +116,9 @@ export default {
 
       lastDateInt: null,
       lastDate: null,
-      firstDate: null
+      firstDate: null,
+
+      showHowToSearch: false,
     }
   },
 
@@ -160,15 +165,10 @@ export default {
     // a function to query the db and
     getData(table_name, index_field, selector, fields) {
 
-      var db = new PouchDB('http://localhost:5984/' + table_name);
+      var db = new PouchDB(this.$pouchDb + table_name);
       var vm = this
 
-      db.createIndex({
-        index:{
-          fields:[index_field]
-        }
-      })
-
+      db.createIndex({index:{fields:[index_field]}})
       db.find({
         selector: selector,
         fields: fields,

@@ -262,7 +262,7 @@ export default {
     getUserData() {
       var vm = this
       vm.loading = true
-      axios.get('http://0.0.0.0:23450/get_user_data', {
+      axios.get(this.$backend + 'get_user_data', {
         params: {
           userId: this.$gAuth.GoogleAuth.currentUser.get().getId()
         }
@@ -293,7 +293,7 @@ export default {
 
       // post data + userid - id, rev (if new entry)
       // manage the rest in the backend
-      axios.post('http://0.0.0.0:23450/sync_user_data', {
+      axios.post(this.$backend + 'sync_user_data', {
         userData: vm.userData,
         userid: vm.userId
       }).then(function (response) {

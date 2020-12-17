@@ -23,6 +23,10 @@ Vue.use(GAuth, {
 // other
 Vue.config.productionTip = false
 
+// backend
+Vue.prototype.$pouchDb = 'http://0.0.0.0:5984/'
+Vue.prototype.$backend = 'http://0.0.0.0:23450/'
+
 new Vue({
   vuetify: new Vuetify({
     theme: { light: true },

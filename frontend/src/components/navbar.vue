@@ -9,7 +9,6 @@
       <v-spacer></v-spacer>
 
       <signIn/>
-      <v-switch @click="$vuetify.theme.dark=!$vuetify.theme.dark">Toggle Theme</v-switch>
 
     </v-app-bar>
 
@@ -51,6 +50,21 @@
 
         </v-list-item>
       </v-list>
+
+      <!-- Bottom of drawer  -->
+      <template v-slot:append>
+        <v-list
+          dense
+        >
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>Light/dark mode</v-list-item-title>
+            <v-switch @click="$vuetify.theme.dark=!$vuetify.theme.dark"></v-switch>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+      </template>
+
     </v-navigation-drawer>
   </div>
 </template>
