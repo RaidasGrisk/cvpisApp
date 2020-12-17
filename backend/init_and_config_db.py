@@ -48,3 +48,49 @@ print(id)
 new_doc = couchserver[db_name].get(id)
 new_doc['asd2'] = 2
 couchserver[db_name].save(new_doc)
+
+# ---------------- #
+# create views
+
+couchserver[db_name].save({'init_date': 1, 'foo': 'bar'})
+couchserver[db_name].save({'init_date': 2, 'foo': 'bar'})
+couchserver[db_name].save({'init_date': 2, 'foo': 'bar'})
+couchserver[db_name].save({'init_date': 2, 'foo': 'bar'})
+couchserver[db_name].save({'init_date': 3, 'foo': 'bar'})
+
+# count
+view_fun = {
+    "_id": "_design/doc_count_by_init_date",
+    "views": {
+        "doc_count_by_init_date": {
+            "map": "function(doc) { emit(doc.init_date, 1); }",
+            "reduce": "_count"
+        }
+    }
+}
+couchserver['tenders'].save(view_fun)
+
+# count
+view_fun = {
+    "_id": "_design/doc_count_by_init_date",
+    "views": {
+        "doc_count_by_init_date": {
+            "map": "function(doc) { emit(doc.init_date, 1); }",
+            "reduce": "_count"
+        }
+    }
+}
+couchserver['sutartys'].save(view_fun)
+
+# sum
+view_fun = {
+    "_id": "_design/doc_sum_by_init_date",
+    "views": {
+        "doc_sum_by_init_date": {
+            "map": "function(doc) { emit(doc.init_date, doc.price); }",
+            "reduce": "_sum"
+        }
+    }
+}
+couchserver['sutartys'].save(view_fun)
+
