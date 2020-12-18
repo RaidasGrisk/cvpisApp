@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import pandas as pd
 import datetime
-from data_handling.utils import get_page
+from data_utils.utils import get_page
 import couchdb
 from private import couchdb_creds
 
