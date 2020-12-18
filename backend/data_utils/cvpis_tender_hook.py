@@ -144,11 +144,7 @@ def cvpis_tender_update(days_to_look_back=1, update_duplicates=False):
 
     # connect to db
     couchserver = couchdb.Server(f'http://{couchdb_creds["acc"]}:{couchdb_creds["pass"]}@{couchdb_creds["host"]}')
-    try:
-        db = couchserver['tenders']
-    except couchdb.http.ResourceNotFound:
-        print('No db tenders, creating an new db')
-        db = couchserver.create('tenders')
+    db = couchserver['tenders']
 
     # update db by:
     # we could iter over each item, but this is too slow

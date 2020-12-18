@@ -175,11 +175,7 @@ def cvpis_sutartys_update(days_to_look_back=1, update_duplicates=False):
 
     # connect to db
     couchserver = couchdb.Server(f'http://{couchdb_creds["acc"]}:{couchdb_creds["pass"]}@{couchdb_creds["host"]}')
-    try:
-        db = couchserver['sutartys']
-    except couchdb.http.ResourceNotFound:
-        print('No db sutartys, creating an new db')
-        db = couchserver.create('sutartys')
+    db = couchserver['sutartys']
 
     # update db by:
     # we could iter over each item, but this is too slow

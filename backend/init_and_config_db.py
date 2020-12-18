@@ -1,62 +1,80 @@
 import couchdb
 from private import couchdb_creds
 
+# ---------------- #
 # login as admin
-couchdb_creds['host'] = 'localhost:5984'
+# couchdb_creds['host'] = '34.123.231.211:5984'
 url = f'http://{couchdb_creds["acc"]}:{couchdb_creds["pass"]}@{couchdb_creds["host"]}'
 couchserver = couchdb.Server(url)
 
-# create db
-db_name = 'test'
-db = couchserver.create(db_name)
+# ---------------- #
+# define config
+public_dbs = ['tenders', 'sutartys']
+private_dbs = ['subscriptions']
 
-# modify roles
-# by default a newly created db will have this:
-# {'members': {'roles': ['_admin']}, 'admins': {'roles': ['_admin']}}
-# As defined in fauxton: Database members can access the database.
-# If no members are defined, the database is public.
-# this is what we want the db to be, except that later
-# will restrict the db to be read-only to non admin users
-couchserver[db_name].security = {'admins': {'roles': ['_admin']}}
+# private
+for db_name in private_dbs:
+    db = couchserver.create(db_name)
 
-# set permissions
-# https://gist.github.com/ThibaultJanBeyer/389bca37f4b6973b84908895300bb7de
-validation_fun = {
-  "_id": "_design/auth",
-  "language": "javascript",
-  "validate_doc_update": "function(newDoc, oldDoc, userCtx) { if (userCtx.roles.indexOf('admin') !== -1) { return; } else { throw ({ forbidden: 'Only admins may edit the database' }); } }"
-}
-couchserver[db_name].save(validation_fun)
+# public
+for db_name in public_dbs:
 
-# test permissions
-url = 'http://localhost:5984'
-couchserver = couchdb.Server(url)
+    # create db
+    db = couchserver.create(db_name)
 
-# test: read
-for docid in couchserver[db_name].view('_all_docs'):
+    # modify roles
+    # by default a newly created db will have this:
+    # {'members': {'roles': ['_admin']}, 'admins': {'roles': ['_admin']}}
+    # As defined in fauxton: Database members can access the database.
+    # If no members are defined, the database is public.
+    # this is what we want the db to be, except that later
+    # will restrict the db to be read-only to non admin users
+    couchserver[db_name].security = {'admins': {'roles': ['_admin']}}
+
+    # set permissions
+    # https://gist.github.com/ThibaultJanBeyer/389bca37f4b6973b84908895300bb7de
+    validation_fun = {
+      "_id": "_design/auth",
+      "language": "javascript",
+      "validate_doc_update": "function(newDoc, oldDoc, userCtx) { if (userCtx.name === 'admin') { return; } else { throw ({ forbidden: 'Only admins may edit the database' }); } }"
+    }
+    couchserver[db_name].save(validation_fun)
+
+    # ---------------- #
+    # test permissions
+    id_temp, _ = couchserver[db_name].save({'test': 1})
+    couchserver_test = couchdb.Server('http://' + couchdb_creds['host'])
+
+    # test: read
+    for docid in couchserver_test[db_name].view('_all_docs'):
+        try:
+            doc_id = docid['id']
+            print(doc_id, couchserver_test[db_name][doc_id])
+        except Exception as e:
+            print(e)
+
+    # test: save
     try:
-        doc_id = docid['id']
-        print(doc_id, couchserver[db_name][doc_id])
+        id, rev = couchserver_test[db_name].save({'test': 2})
+        print(id)
     except Exception as e:
         print(e)
 
-# test: save
-id, rev = couchserver[db_name].save({'test': 1})
-print(id)
+    # test: modify
+    new_doc = couchserver_test[db_name].get(id_temp)
+    new_doc['asd2'] = 2
+    try:
+        couchserver_test[db_name].save(new_doc)
+    except Exception as e:
+        print(e)
 
-# test: modify
-new_doc = couchserver[db_name].get(id)
-new_doc['asd2'] = 2
-couchserver[db_name].save(new_doc)
+    # clean
+    doc_temp = couchserver_test[db_name].get(id_temp)
+    couchserver[db_name].delete(doc_temp)
+
 
 # ---------------- #
 # create views
-
-couchserver[db_name].save({'init_date': 1, 'foo': 'bar'})
-couchserver[db_name].save({'init_date': 2, 'foo': 'bar'})
-couchserver[db_name].save({'init_date': 2, 'foo': 'bar'})
-couchserver[db_name].save({'init_date': 2, 'foo': 'bar'})
-couchserver[db_name].save({'init_date': 3, 'foo': 'bar'})
 
 # count
 view_fun = {
