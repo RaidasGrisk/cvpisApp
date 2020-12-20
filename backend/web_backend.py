@@ -2,14 +2,14 @@ from flask import Flask
 app = Flask(__name__)
 
 # include routes
-import backend_endpoints.endpoints_is_up
-import backend_endpoints.endpoints_email
-import backend_endpoints.endpoints_frontend
+from backend_endpoints.endpoints_is_up import is_up
+from backend_endpoints.endpoints_email import remove_subscriber
+from backend_endpoints.endpoints_frontend import get_user_data, sync_user_data
 
-app.add_url_rule('/is_up', view_func=endpoints_is_up.is_up)
-app.add_url_rule('/unsubscribe', view_func=endpoints_email.remove_subscriber)
-app.add_url_rule('/get_user_data', view_func=endpoints_frontend.get_user_data)
-app.add_url_rule('/sync_user_data', view_func=endpoints_frontend.sync_user_data, methods=['POST', 'OPTIONS'])
+app.add_url_rule('/is_up', view_func=is_up)
+app.add_url_rule('/unsubscribe', view_func=remove_subscriber)
+app.add_url_rule('/get_user_data', view_func=get_user_data)
+app.add_url_rule('/sync_user_data', view_func=sync_user_data, methods=['POST', 'OPTIONS'])
 
 # as always issues with dev server and cors
 @app.after_request
