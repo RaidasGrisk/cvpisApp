@@ -24,8 +24,8 @@ Vue.use(GAuth, {
 Vue.config.productionTip = false
 
 // backend
-Vue.prototype.$pouchDb = 'http://34.123.231.211:5984/'
-Vue.prototype.$backend = 'http://34.123.231.211:23450/'
+Vue.prototype.$pouchDb = 'http://35.208.126.174:5984/'
+Vue.prototype.$backend = 'http://35.208.126.174:23450/'
 
 new Vue({
   vuetify: new Vuetify({

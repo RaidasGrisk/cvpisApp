@@ -2,9 +2,9 @@ from flask import Flask
 app = Flask(__name__)
 
 # include routes
-import endpoints_is_up
-import endpoints_email
-import endpoints_frontend
+import backend_endpoints.endpoints_is_up
+import backend_endpoints.endpoints_email
+import backend_endpoints.endpoints_frontend
 
 app.add_url_rule('/is_up', view_func=endpoints_is_up.is_up)
 app.add_url_rule('/unsubscribe', view_func=endpoints_email.remove_subscriber)
@@ -25,4 +25,3 @@ def after_request(response):
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port='23450')
-
