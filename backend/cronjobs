@@ -1,3 +1,8 @@
+# cronjobs
 */1 * * * * python3 /home/mrraidas/cvpisApp/backend/test_job.py >> /home/mrraidas/cvpisApp/backend/logs/test_job.log
-*/2 * * * * python3 /home/mrraidas/cvpisApp/backend/update_db.py >> /home/mrraidas/cvpisApp/backend/logs/update_db.log
-00 10 * * * python3 /home/mrraidas/cvpisApp/backend/send_emails.py >> /home/mrraidas/cvpisApp/backend/logs/send_emails.log
+*/10 * * * * python3 /home/mrraidas/cvpisApp/backend/update_db.py >> /home/mrraidas/cvpisApp/backend/logs/update_db.log
+0 5 * * * python3 /home/mrraidas/cvpisApp/backend/send_emails.py >> /home/mrraidas/cvpisApp/backend/logs/send_emails.log
+0 0 * * * logrotate /home/mrraidas/cvpisApp/backend/logs/logrotate.conf --state /home/mrraidas/cvpisApp/backend/logs/logrotate-state --verbose
+
+# flask app
+gunicorn --bind 0.0.0.0:23450 web_backend:app --error-logfile /home/mrraidas/cvpisApp/backend/logs/gunicorn_error.log --access-logfile /home/mrraidas/cvpisApp/backend/logs/gunicorn_access.log --capture-output --log-level debug &
