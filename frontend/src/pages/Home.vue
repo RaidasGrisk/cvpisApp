@@ -57,7 +57,8 @@
       </v-col>
 
       <v-col md="4">
-        <lineChart v-if="data2 && labels2" :data="data2" :labels="labels2" :yAxisMax="500000000" text="Sutartys €"/>
+        <!-- :yAxisMax="500000000" -->
+        <lineChart v-if="data2 && labels2" :data="data2" :labels="labels2" text="Sutartys €"/>
       </v-col>
 
       <v-col md="4">
@@ -109,8 +110,8 @@ export default {
           labels1.push(item.key)
           data1.push(item.value)
       });
-      vm.labels1 = labels1
-      vm.data1 = data1
+      vm.labels1 = labels1.slice(-30)
+      vm.data1 = data1.slice(-30)
     }).catch(function (err) {
       console.log(err)
     });
@@ -125,8 +126,8 @@ export default {
           labels2.push(item.key)
           data2.push(item.value)
       });
-      vm.labels2 = labels2
-      vm.data2 = data2
+      vm.labels2 = labels2.slice(-30)
+      vm.data2 = data2.slice(-30)
     }).catch(function (err) {
       console.log(err)
     });
@@ -141,8 +142,8 @@ export default {
           labels3.push(item.key)
           data3.push(item.value)
       });
-      vm.labels3 = labels3
-      vm.data3 = data3
+      vm.labels3 = labels3.slice(-30)
+      vm.data3 = data3.slice(-30)
     }).catch(function (err) {
       console.log(err)
     });

@@ -15,9 +15,10 @@ export default {
         labels: vm.labels,
         datasets: [
           {
-            label: "Data 1",
-            pointRadius: 0,
-            pointBorderColor: "#ffffff",
+            label: vm.text,
+            pointRadius: 3,
+            pointBorderColor: "rgba(1, 116, 188, 0.50)",
+            pointBackgroundColor: "rgba(1, 116, 188, 0.50)",
             data: vm.data,
             backgroundColor: "transparent",
             borderColor: "rgba(1, 116, 188, 0.50)",
