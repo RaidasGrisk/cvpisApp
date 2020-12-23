@@ -44,7 +44,7 @@ def send_email(html_content, bottom_content, receiver_email=''):
     # Create secure connection with server and send email
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL('bugienis.serveriai.lt', 465, context=context) as server:
-        server.login(email_creds['acc'], email_creds['pass'])
+        server.login(email_creds['acc'], email_creds['pass']) 
         server.sendmail(
             sender_email, receiver_email, message.as_string()
         )
