@@ -24,7 +24,7 @@ export default new VueRouter({
     },
     {
       path: '/Subscriptions',
-      name: 'My subscriptions',
+      name: 'My profile',
       component: Subscriptions,
       icon: 'mdi-file-search-outline'
     }
