@@ -7,6 +7,11 @@ from private import couchdb_creds, unsub_config, unsub_url, backend_domain
 from itsdangerous import URLSafeSerializer
 
 
+pd.set_option('display.max_rows', 500)
+pd.set_option('display.max_columns', 500)
+pd.set_option('display.width', 1000)
+
+
 def send_emails():
 
     # read data
@@ -14,7 +19,7 @@ def send_emails():
 
     period_days = 1  # [1 if datetime.date.today().weekday() != 0 else 3][0]
     time = datetime.date.today() - datetime.timedelta(days=period_days)
-    query = {'selector': {'init_date': {'$gt': time.isoformat()}}, 'limit': 9999}
+    query = {'selector': {'init_date': {'$gte': time.isoformat()}}, 'limit': 9999}
     tenders = client['tenders'].find(query)
     tender_data = pd.DataFrame([dict(row) for row in tenders])
 

@@ -1,63 +1,4 @@
 import re
-import os
-
-
-# def update_sub_list(email, search_string, TypeContractIds):
-#     """
-#     Adds a new line to subs if email not in table
-#     Else updates fields of corresponding email
-#     Also creates subs table if it does not exist
-#
-#     :param email: email of new or existing sub
-#     :param search_string: search_string
-#     :param TypeContractIds: darbai - 1, paslaugos - 2, prekes - 3
-#     :return: {'new_sub': Bool} True for new False for old
-#     """
-#
-#     # cb connection
-#     conn = sqlite3.connect(os.path.join(ROOT_DIR, *['db', 'main.db']))
-#     c = conn.cursor()
-#
-#     # create table if not exist
-#     if not c.execute('SELECT name FROM sqlite_master WHERE type="table" AND name="subs"').fetchone():
-#         print('Cannot access subs table in db, hence creating a new table named subs')
-#         c.execute('create table if not exists subs (email TEXT, search_string TEXT, TypeContractIds TEXT)')
-#         conn.commit()
-#
-#     # update if old sub
-#     if c.execute('SELECT * FROM subs WHERE email = ?', (email, )).fetchone():
-#         c.execute('UPDATE subs SET search_string = ?, TypeContractIds = ? where email = ?', (search_string, TypeContractIds, email))
-#         conn.commit()
-#         c.close()
-#         return {'new_sub': False}
-#     # add new if new sub
-#     else:
-#         c.execute('INSERT INTO subs VALUES (?, ?, ?)', (email, search_string, TypeContractIds))
-#         conn.commit()
-#         c.close()
-#         return {'new_sub': True}
-
-# test
-# update_sub_list(email='raidas2131@gmail.com', search_string='DDAADa', TypeContractIds='1, 3')
-
-
-# def unsub(email):
-#
-#     # cb connection
-#     conn = sqlite3.connect(os.path.join(ROOT_DIR, *['db', 'main.db']))
-#     c = conn.cursor()
-#
-#     # remove row
-#     if c.execute('SELECT email FROM subs WHERE email=?', (email, )).fetchone():
-#         c.execute('DELETE FROM subs WHERE email=?', (email,))
-#         conn.commit()
-#         c.close()
-#         return True
-#     else:
-#         return False
-
-# test
-# unsub(email='bbb@bbb.bbb')
 
 
 def get_search_conds(search_string):
@@ -99,7 +40,9 @@ def get_series_mask(data, cond_pairs):
         else:
             reg_string += ''.join(pair) + '|'
     reg_string = reg_string[:-1]  # remove last or |
-    mask = data.str.contains(reg_string)
+    # case=False is important, because in case this is not a regex string (say only a single search string word),
+    # the str.contains op is case sensitive by default
+    mask = data.str.contains(reg_string, case=False)
     return mask
 
 # test
