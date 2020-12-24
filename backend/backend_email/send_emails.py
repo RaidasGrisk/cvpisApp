@@ -54,11 +54,15 @@ def send_emails():
         unsub_url_ = unsub_url + '/unsubscribe?token=' + '{}'.format(token)
         bottom_content += 'Nutraukti prenumeratą galite <a href="{}">čia</a>'.format('http://' + unsub_url_)
 
-        if 0 < len(email_data) < 500:
-            print(f'sending email: {email}')
+        print(f'sending email: {email}', end=' // ')
+        try:
             send_email(email_data.to_html(border=0, escape=False, index=False, justify='left'),
                        bottom_content,
                        email)
+            print('success')
+        except:
+            print('fail')
+
 
 if __name__ == '__main__':
     send_emails()
