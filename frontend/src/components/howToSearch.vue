@@ -46,7 +46,7 @@
 
       <div class="text-center">
         <p>
-        Filering and searching is instant, just start typing!
+        Filtering and searching is instant, just start typing!
       </p>
       </div>
       <br>

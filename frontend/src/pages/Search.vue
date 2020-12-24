@@ -62,11 +62,13 @@
     <br><br>
 
     <v-data-table
+      dense
       :headers="headers"
       :items="filteredTenders"
       class="elevation-1"
       :footer-props="{'items-per-page-options':[15, 30, 50, 100]}"
-      dense
+      sort-by="init_date"
+      sort-desc="true"
       :loading="isDataLoaded"
     >
       <!-- The following is to make a url link
