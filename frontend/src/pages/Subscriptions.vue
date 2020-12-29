@@ -204,7 +204,7 @@ export default {
       dialogDelete: false,
       headers: [
         { text: 'email', value: 'email' },
-        { text: 'searchstring', value: 'searchstring' },
+        { text: 'keywords', value: 'searchstring' },
         { text: 'tender_classes', value: 'tender_classes' },
         { text: 'tender_types', value: 'tender_types' },
         { text: 'Actions', value: 'actions', sortable: false },

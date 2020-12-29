@@ -5,7 +5,7 @@
       dense
     >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>CvpisApp</v-toolbar-title>
+      <v-toolbar-title>tendersApp</v-toolbar-title>
       <v-spacer></v-spacer>
 
       <signIn/>

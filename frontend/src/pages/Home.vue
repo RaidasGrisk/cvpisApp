@@ -9,7 +9,7 @@
               Search
             </p>
             <div class="text--primary">
-              Search by filtering tenders by keywords of your choice.
+              Search by filtering tenders using keywords of your choice.
               <!-- Cvpp is hard to use if you are trying to filter tenders. Here you can do the same but easier and faster. -->
             </div>
           </v-card-text>

@@ -14,7 +14,7 @@ export default new VueRouter({
       path: '/',
       name: 'Home',
       component: Home,
-      icon: 'mdi-home-minus-outline',
+      icon: 'mdi-checkbox-blank-circle',
     },
     {
       path: '/Search',
@@ -26,7 +26,7 @@ export default new VueRouter({
       path: '/Subscriptions',
       name: 'My profile',
       component: Subscriptions,
-      icon: 'mdi-file-search-outline'
+      icon: 'mdi-account'
     }
   ],
   linkActiveClass: 'is-active'
