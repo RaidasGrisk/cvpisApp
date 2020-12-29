@@ -7,7 +7,7 @@
     <v-card-text class="text-center">
       <p class="display-1 text--primary">
         <br>
-        How does Search work?
+        How does it work?
       </p>
     </v-card-text>
 

@@ -6,10 +6,11 @@
         <v-card elevation="0" outlined>
           <v-card-text>
             <p class="display-1 text--primary">
-              Search tenders
+              Search
             </p>
             <div class="text--primary">
-              Cvpp is hard to use if you are trying to filter tenders. Here you can do the same but easier and faster.
+              Search by filtering tenders by keywords of your choice.
+              <!-- Cvpp is hard to use if you are trying to filter tenders. Here you can do the same but easier and faster. -->
             </div>
           </v-card-text>
         </v-card>
@@ -19,10 +20,10 @@
         <v-card elevation="0" outlined>
           <v-card-text>
             <p class="display-1 text--primary">
-              Subscribe for daily update
+              Subscribe
             </p>
             <div class="text--primary">
-              Each day receive an email with new tenders filtered by the keywords of your choice.
+              Each day receive an email with new tenders of your choice.
             </div>
           </v-card-text>
         </v-card>
@@ -58,7 +59,7 @@
 
       <v-col md="4">
         <!-- :yAxisMax="500000000" -->
-        <lineChart v-if="data2 && labels2" :data="data2" :labels="labels2" text="Sutartys €"/>
+        <lineChart v-if="data2 && labels2" :data="data2" :labels="labels2" text="Sutartys k €"/>
       </v-col>
 
       <v-col md="4">
@@ -124,7 +125,7 @@ export default {
       var data2 = []
       result['rows'].forEach(function (item) {
           labels2.push(item.key)
-          data2.push(item.value)
+          data2.push(Math.round(item.value / 1000))
       });
       vm.labels2 = labels2.slice(-30)
       vm.data2 = data2.slice(-30)

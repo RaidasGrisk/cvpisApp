@@ -9,13 +9,13 @@
         <v-card elevation="0" outlined>
           <v-card-text>
             <p class="display-1 text--primary">
-              Search params
+              Options
             </p>
             <v-text-field
               v-model="searchParams.searchString"
-              label="Search string"
+              label="Keywords"
             >
-            <v-btn slot="append" small @click.stop="showHowToSearch=true">How to?</v-btn>
+            <v-btn slot="append" small @click.stop="showHowToSearch=true">Explanation</v-btn>
 
             </v-text-field>
 
@@ -66,7 +66,7 @@
       :headers="headers"
       :items="filteredTenders"
       class="elevation-1"
-      :footer-props="{'items-per-page-options':[15, 30, 50, 100]}"
+      :footer-props="{'items-per-page-options':[50, 100]}"
       sort-by="init_date"
       sort-desc="true"
       :loading="isDataLoaded"

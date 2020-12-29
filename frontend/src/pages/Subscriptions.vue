@@ -3,8 +3,8 @@
     <v-card elevation="1" outlined>
       <v-card-text>
         <p class="display-1 text--primary">
-          Login Status:
-           <label v-if="this.isSignIn">{{ this.$gAuth.GoogleAuth.currentUser.get().getId() }}</label>
+          Login Status: <br>
+           <label v-if="this.isSignIn">Hello, {{ this.$gAuth.GoogleAuth.currentUser.get().getId() }}</label>
            <label v-else>Not signed in</label><br>
         </p>
         <div class="text--primary">
