@@ -111,8 +111,8 @@ export default {
           labels1.push(item.key)
           data1.push(item.value)
       });
-      vm.labels1 = labels1.slice(-30)
-      vm.data1 = data1.slice(-30)
+      vm.labels1 = labels1.slice(-90)
+      vm.data1 = data1.slice(-90)
     }).catch(function (err) {
       console.log(err)
     });
@@ -127,8 +127,8 @@ export default {
           labels2.push(item.key)
           data2.push(Math.round(item.value / 1000))
       });
-      vm.labels2 = labels2.slice(-30)
-      vm.data2 = data2.slice(-30)
+      vm.labels2 = labels2.slice(-90)
+      vm.data2 = data2.slice(-90)
     }).catch(function (err) {
       console.log(err)
     });
@@ -143,8 +143,8 @@ export default {
           labels3.push(item.key)
           data3.push(item.value)
       });
-      vm.labels3 = labels3.slice(-30)
-      vm.data3 = data3.slice(-30)
+      vm.labels3 = labels3.slice(-90)
+      vm.data3 = data3.slice(-90)
     }).catch(function (err) {
       console.log(err)
     });

@@ -54,6 +54,13 @@
               Tenders in total # {{ filteredTenders.length }} <br>
               Tenders a day # ~{{ (filteredTenders.length / lastDateInt).toFixed(2) }}
             </p>
+            <p>
+              <v-text-field
+                v-model="monthsToLookBack"
+                label="Number of months to look back"
+              ></v-text-field>
+              <v-btn x-small @click="this.refreshData" :disabled="this.disableRefreshButton">refresh</v-btn>
+            </p>
           </v-card-text>
         </v-card>
       </v-col>
@@ -68,7 +75,7 @@
       class="elevation-1"
       :footer-props="{'items-per-page-options':[50, 100]}"
       sort-by="init_date"
-      sort-desc="true"
+      :sort-desc=true
       :loading="isDataLoaded"
     >
       <!-- The following is to make a url link
@@ -113,6 +120,8 @@ export default {
         tender_classes: dbConstants.tenderClasses,
       },
 
+      monthsToLookBack: 6,
+      disableRefreshButton: true,
       data: [], // the data returned by db
       isDataLoaded: true,
 
@@ -153,7 +162,7 @@ export default {
 
       var dataMask = this.data.map(tender =>
           (regexString.test(tender.name.toLowerCase()) &&
-          this.searchParams.tender_types.includes(tender.tender_type) &&
+          this.searchParams.tender_type.includes(tender.tender_type) &&
           this.searchParams.tender_class.includes(tender.tender_class))
       )
 
@@ -166,6 +175,11 @@ export default {
 
     // a function to query the db and
     getData(table_name, index_field, selector, fields) {
+
+      // init and disable other functionalities until load is finished
+      this.data = [];
+      this.disableRefreshButton = true;
+      this.isDataLoaded = true;
 
       var db = new PouchDB(this.$pouchDb + table_name);
       var vm = this
@@ -186,9 +200,26 @@ export default {
         vm.firstDate = minMaxDates[0]
 
         vm.isDataLoaded = false
+        vm.disableRefreshButton = false
       }).catch(function (err) {
         console.log(err)
       })
+    },
+
+    refreshData() {
+      // get latest data on load
+
+      var d = new Date();
+      d.setMonth(d.getMonth() - this.monthsToLookBack);
+      console.log(d)
+
+      this.getData(
+        'tenders',
+        'init_date',
+        {init_date: {$gt: d}},
+        ['name', 'buyer', 'init_date', 'deadline', 'tender_type', 'tender_class', 'url']
+      )
+
     }
 
   },
@@ -196,16 +227,7 @@ export default {
   mounted() {
 
     // get latest data on load
-    var d = new Date();
-    d.setMonth(d.getMonth() - 12);
-    console.log(d)
-
-    this.getData(
-      'tenders',
-      'init_date',
-      {init_date: {$gt: d}},
-      ['name', 'buyer', 'init_date', 'deadline', 'tender_type', 'tender_class', 'url']
-    )
+    this.refreshData()
   }
 
 }
